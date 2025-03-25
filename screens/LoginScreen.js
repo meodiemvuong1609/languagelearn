@@ -1,66 +1,105 @@
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { authService } from '../services/authService';
 
-import { useState, useEffect } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import AuthService from "../services/AuthService";
-
-export default function LoginScreen({ navigation }) {
-
+const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  useEffect(() => {
-    const checkLogin = async () => {
-      const token = await AsyncStorage.getItem('@auth_token');
-      if (token) {
-        navigation.replace('Home');
-      }
-    }
-    checkLogin();
-  }, [])
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!username || !password) {
-      alert('Vui lòng nhập đầy đủ thông tin');
+      Alert.alert('Error', 'Please fill in all fields');
       return;
     }
+
     try {
-      const response = await AuthService.Login({username, password})
-      console.log(response);
+      setLoading(true);
+      await authService.login(username, password);
+      // Navigate to Home screen after successful login
       navigation.replace('Home');
     } catch (error) {
-      alert(error.message);
+      Alert.alert(
+        'Login Failed',
+        error.response?.data?.detail || 'Please check your credentials and try again'
+      );
+    } finally {
+      setLoading(false);
     }
-    
-  }
-
+  };
 
   return (
-    <View className="flex-1 items-center justify-center">
-      <View className="bg-white w-[350] p-4 rounded-lg">
-        <Text className="font-bold text-lg text-green-700">Đăng nhập</Text>
-        <TextInput
-          className="border border-gray-400 p-3 rounded-lg mt-4"
-          placeholder="Tài khoản"
-          onChangeText={setUsername}
-        />
-        <TextInput
-          className="border border-gray-400 p-3 rounded-lg mt-3"
-          placeholder="Mật khẩu"
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity
-          className=" bg-red-dark-2 p-3 rounded-lg mt-4 items-center"
-          onPress={() => handleLogin()}
-        >
-          <Text className="text-white text-base font-semibold">Đăng nhập</Text>
-        </TouchableOpacity>
-
-        <View className="items-center mt-3">
-          <Text onPress={() => alert("Mật khẩu cũng quên")} className="text-red-600">Quên mật khẩu</Text>
+    <View className="flex-1 bg-white p-4">
+      <View className="flex-1 justify-center">
+        <View className="mb-8">
+          <Text className="text-3xl font-bold text-gray-800 mb-2">Welcome Back</Text>
+          <Text className="text-gray-600">Sign in to continue learning</Text>
         </View>
-        
+
+        <View className="space-y-4">
+          <View>
+            <Text className="text-gray-700 mb-2">Username</Text>
+            <View className="flex-row items-center bg-gray-100 rounded-xl p-3">
+              <MaterialIcons name="person" size={24} color="gray" />
+              <TextInput
+                className="flex-1 ml-2 text-gray-800"
+                placeholder="Enter your username"
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text className="text-gray-700 mb-2">Password</Text>
+            <View className="flex-row items-center bg-gray-100 rounded-xl p-3">
+              <MaterialIcons name="lock" size={24} color="gray" />
+              <TextInput
+                className="flex-1 ml-2 text-gray-800"
+                placeholder="Enter your password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+            </View>
+          </View>
+
+          <TouchableOpacity
+            className="bg-red-dark-5 p-4 rounded-xl mt-4"
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text className="text-white text-center font-semibold text-lg">
+                Sign In
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="mt-4"
+            onPress={() => navigation.navigate('Register')}
+          >
+            <Text className="text-red-dark-5 text-center">
+              Don't have an account? Sign Up
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
-  )
-}
+  );
+};
+
+export default LoginScreen;
