@@ -9,7 +9,6 @@ export const authService = {
         username,
         password,
       });
-      
       if (response.data.code === 200 && response.data.data) {
         await tokenService.setToken(response.data.data);
         return response.data;
@@ -39,7 +38,7 @@ export const authService = {
   // Get current user
   getCurrentUser: async () => {
     try {
-      const response = await api.get('/auth/api/me/');
+      const response = await api.get('/auth/me/');
       return response.data;
     } catch (error) {
       console.error('Get user error:', error);

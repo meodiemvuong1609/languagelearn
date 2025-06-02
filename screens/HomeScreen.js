@@ -7,7 +7,6 @@ export default function HomeScreen({ navigation }) {
     <View className="flex-1 bg-gray-50">
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
-      {/* Header Section */}
       <View className="bg-red-dark-5 p-3 pt-14">
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center">

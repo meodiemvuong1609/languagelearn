@@ -1,9 +1,10 @@
 import axios from 'axios';
+import { SERVER_URL } from '@env';
 import { tokenService } from './tokenService';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api',
-  timeout: 10000,
+  baseURL: SERVER_URL,
+  timeout: 20000,
   headers: {
     'Content-Type': 'application/json',
   },

@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, StatusBar, Alert } from 'react-native';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
+import { useDispatch } from 'react-redux';
 import { authService } from '../services/authService';
 
 export default function ProfileScreen({ navigation }) {
+
   const handleLogout = async () => {
     try {
       await authService.logout();
